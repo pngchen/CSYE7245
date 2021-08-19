@@ -1,6 +1,7 @@
 import h5py
 import numpy as np
 import gcsfs
+import pickle
 
 def split_data(array, res):
     for i in range(25):
@@ -8,21 +9,25 @@ def split_data(array, res):
         res['IN'].append(temp[1])
         res['OUT'].append(temp[2])
 
-def run(file, end):
-    DATA_PATH = file
+def run():
+    # DATA_PATH = file
 
     FS = gcsfs.GCSFileSystem(project="Assignment1",
                             token="./hardy-portal-318606-3c8e02bd3a5d.json")
 
     # print(end)
-    with FS.open(f'gs://assignment1-data/data/vil/2018/{DATA_PATH}.h5', 'rb') as data_file:
-        data = h5py.File(data_file, 'r')
-        s = np.s_[0:end:1]
-        vil = data['vil'][s]
+    # with FS.open(f'gs://assignment1-data/data/vil/2018/{DATA_PATH}.h5', 'rb') as data_file:
+    #     data = h5py.File(data_file, 'r')
+    #     s = np.s_[0:end:1]
+    #     vil = data['vil'][s]
+
+    with FS.open('gs://assignment1-data/res/pkl/vilData.pkl', 'rb') as pklRes:
+        vil = pickle.load(pklRes)
 
     res = {'IN':[],"OUT":[]}
-    for i in vil:
-        split_data(i, res)
+    # for i in vil:
+    #     split_data(i, res)
+    split_data(vil, res)
 
     res["IN"] = np.array(res["IN"])
     res["OUT"] = np.array(res["OUT"])

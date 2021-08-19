@@ -45,18 +45,17 @@ async def get_synthetic(modelName: str, idx: int):
     with FS.open(f'gs://assignment1-data/models/synrad/{model}.h5', 'rb') as model_file:
         model_gcs = h5py.File(model_file, 'r')
         model = tf.keras.models.load_model(model_gcs, compile=False, custom_objects={"tf": tf})
-        model = 3
 
-    # x_test, y_test = syntheticData.get_data(idx)
-    #
-    # y_pred = synthetic.run_synrad(model, x_test)
-    #
-    # name = synthetic.main(modelName, x_test, y_test, y_pred)
+    x_test, y_test = syntheticData.get_data(idx)
 
-    return {"name": model}
+    y_pred = synthetic.run_synrad(model, x_test)
 
-@app.post("/nowcast/{modelName}/{datapath}")
-async def get_nowcast(modelName: str, datapath: str):
+    name = synthetic.main(modelName, x_test, y_test, y_pred)
+
+    return {"name": name}
+
+@app.post("/nowcast/{modelName}/{idx}")
+async def get_nowcast(modelName: str, idx: int):
     FS = gcsfs.GCSFileSystem(project="Assignment1",
                              token="hardy-portal-318606-3c8e02bd3a5d.json")
     model = config.models[modelName]
@@ -65,9 +64,9 @@ async def get_nowcast(modelName: str, datapath: str):
         model_gcs = h5py.File(model_file, 'r')
         model = tf.keras.models.load_model(model_gcs, compile=False, custom_objects={"tf": tf})
 
-    x_test, y_test = dataPipeline.run(datapath, 1)
+    x_test, y_test = dataPipeline.run()
 
-    name = nowcast.visualize_result(model, x_test, y_test, 0, modelName)
+    name = nowcast.visualize_result(model, x_test, y_test, idx, modelName)
 
     return {"name": name}
 

@@ -122,7 +122,9 @@ def visualize_result(model, x_test, y_test, idx, modelName):
                       ncol=5, borderaxespad=0, frameon=False, fontsize='16')
     plt.subplots_adjust(hspace=0.05, wspace=0.05)
 
-    name = f"/storage/{str(uuid.uuid4())}.png"
-    fig.savefig(name, bbox_inches='tight')
+    # name = f"/storage/{str(uuid.uuid4())}.png"
+    name = f"{str(uuid.uuid4())}.png"
+    imgRes = FS.open(f'gs://assignment1-data/res/img/{name}', 'wb')
+    fig.savefig(imgRes, bbox_inches='tight')
 
     return name

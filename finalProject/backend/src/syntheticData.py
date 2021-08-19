@@ -58,10 +58,10 @@ def lght_to_grid(data):
 def get_data(idx):
     y_test = {"vil":[]}
     x_test = {"ir107":[], "ir069":[], "lght":[]}
-    dataSource = zip(events.get_group(event_ids[-1])["id"],
-                     events.get_group(event_ids[-1])["file_name"],
-                     events.get_group(event_ids[-1])["file_index"],
-                     events.get_group(event_ids[-1])["img_type"])
+    dataSource = zip(events.get_group(event_ids[idx])["id"],
+                     events.get_group(event_ids[idx])["file_name"],
+                     events.get_group(event_ids[idx])["file_index"],
+                     events.get_group(event_ids[idx])["img_type"])
 
     for id, fn, fi, it in dataSource:
         if it == "vil":

@@ -7,11 +7,11 @@ services:
       - 8501:8501
     depends_on:
       - backend
-    volumes:
-        - ./storage:/storage
+#    volumes:
+#        - ./storage:/storage
   backend:
     build: backend
     ports:
       - 8085:8085
-    volumes:
-        - ./storage:/storage
+#    volumes:
+#        - ./storage:/storage

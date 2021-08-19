@@ -2,11 +2,16 @@ import sys
 import uuid
 sys.path.append('./src/')
 import h5py
+import gcsfs
+import pickle
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from display.display import get_cmap
+
+FS = gcsfs.GCSFileSystem(project="Assignment1",
+                         token="hardy-portal-318606-3c8e02bd3a5d.json")
 
 def run_synrad(model,x_test,batch_size=32):
     return model.predict([x_test[k] for k in ['ir069','ir107','lght']],batch_size=batch_size)
@@ -44,8 +49,22 @@ def main(modelName, x_test, y_test, y_preds):
     plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.05,
                         wspace=0.35)
 
+    if isinstance(y_preds,(list,)):
+        y_pred=y_preds[0]
+    else:
+        y_pred=y_preds
+    print(y_pred.shape)
+
+    res = y_pred[0]
+    for i in range(1, 49):
+        res = np.insert(res, i, y_pred[i][:, :, 0], axis=2)
+
+    with FS.open('gs://assignment1-data/res/pkl/vilData.pkl', 'wb') as pklRes:
+        pickle.dump(res, pklRes)
+
     # name = f"/storage/{str(uuid.uuid4())}.png"
     name = f"{str(uuid.uuid4())}.png"
-    fig.savefig(name, bbox_inches='tight')
+    imgRes = FS.open(f'gs://assignment1-data/res/img/{name}', 'wb')
+    fig.savefig(imgRes, bbox_inches='tight')
 
     return name
